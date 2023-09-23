@@ -1,26 +1,22 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const app = express();
 const port = 3000;
 
-app.use(bodyParser.urlencoded({ extended : false}));
+const adminRoute = require('./routes/admin');
+const shopRoute = require('./routes/shop');
 
-app.use('/add-product', (req, res, next) => {
-    res.send(`<form method="POST" action="/add-product">
+app.use(bodyParser.urlencoded({extended: false}));
 
-   <input type="text" name="productName" placeholder="Product Name">
+app.use('/admin', adminRoute);
+app.use(shopRoute);
 
-   <input type="text" name="productSize" placeholder="Product Size">
 
-   <button type="submit">Add Product</button>
-
-  </form>`)
-  res.redirect('/');
+app.use((req, res, next) => {
+    res.sendFile(path.join(__dirname, './', 'views', 'notFound.html'))
 })
 
-app.post('/', (req, res, next) => {
-    res.send(`<h1>Hello to Express</h1>`);
-});
 
 
 app.listen(port, () => {
