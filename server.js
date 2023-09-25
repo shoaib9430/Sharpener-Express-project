@@ -1,25 +1,30 @@
+const path = require('path');
+
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
+
 const app = express();
-const port = 3000;
 
-const adminRoute = require('./routes/admin');
-const shopRoute = require('./routes/shop');
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-app.use(bodyParser.urlencoded({extended: true}));
+const adminData = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(adminRoute);
-app.use(shopRoute);
-
+app.use('/admin', adminData.routes);
+app.use(shopRoutes);
 
 app.use((req, res, next) => {
-    res.sendFile(path.join(__dirname, './', 'views', 'notFound.html'))
-})
+    res.status(404).render('404', {
+        pageTitle: 'Page Not Found'
+    });
+});
 
-
-
-app.listen(port, () => {
-    console.log(`app listening at http://localhost:${port}`);
-})
+app.listen(3000, () => {
+    console.log('listening on port 3000');
+});
